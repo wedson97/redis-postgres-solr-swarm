@@ -7,12 +7,12 @@ DB_CONFIG = {
     "dbname": "cbo_ocupacao",
     "user": "postgres",
     "password": "123456",
-    "host": "app_postgres",  # Nome do serviço do Postgres no Docker Swarm
+    "host": "postgres",  # Nome do serviço do Postgres no Docker Swarm
     "port": "5432",  # A porta padrão do Postgres
 }
 
 # URL do Solr
-SOLR_URL = "http://app_solr:8983/solr/cbo_ocupacao"  # Nome do serviço do Solr no Docker Swarm
+SOLR_URL = "http://solr:8983/solr/cbo_ocupacao"  # Nome do serviço do Solr no Docker Swarm
 
 try:
     # Conectar ao banco de dados PostgreSQL

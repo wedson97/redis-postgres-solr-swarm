@@ -9,9 +9,12 @@ services:
       - ./backend:/app
     working_dir: /app
     command: >
-      sh -c "pip install -r requirements.txt && flask run --host=0.0.0.0 --port=5000"
+      sh -c "wait-for-it postgres:5432 -- wait-for-it redis:6379 -- pip install -r requirements.txt && flask run --host=0.0.0.0 --port=5000"
     ports:
-      - "5000:5000"
+      - "5000:5000"  # Flask
+    environment:
+      - DATABASE_URL=postgresql://postgres:123456@postgres:5432/cbo_ocupacao
+      - REDIS_URL=redis://redis:6379/0
     deploy:
       mode: replicated
       replicas: 4  # Distribui entre os 4 EC2
@@ -26,6 +29,8 @@ services:
       POSTGRES_DB: cbo_ocupacao
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123456
+    ports:
+      - "5432:5432"  # Expondo a porta do PostgreSQL
     deploy:
       replicas: 1  # Banco deve rodar em apenas 1 EC2
       placement:
@@ -36,6 +41,8 @@ services:
     image: redis:latest
     networks:
       - global
+    ports:
+      - "6379:6379"  # Expondo a porta do Redis
     deploy:
       replicas: 1
       placement:
@@ -46,6 +53,8 @@ services:
     image: solr:latest
     networks:
       - global
+    ports:
+      - "8983:8983"  # Expondo a porta do Solr
     deploy:
       replicas: 1
       placement:
