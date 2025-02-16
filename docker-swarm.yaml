@@ -1,73 +1,86 @@
-version: "3.9"
+version: '3.8'
 
 services:
-  flask-app:
+  app_flask:
     image: python:3.9-slim
-    networks:
-      - global
-    volumes:
-      - ./backend:/app
-    working_dir: /app
-    command: >
-      sh -c "pip install -r requirements.txt && flask run --host=0.0.0.0 --port=5000"
-    ports:
-      - "5000:5000"
     deploy:
       mode: replicated
-      replicas: 4  # Distribui entre os 4 EC2
-      placement:
-        max_replicas_per_node: 1  # Garante que cada EC2 tenha 1 instância
-      restart_policy:
-        condition: on-failure
-
-  postgres:
-    image: postgres:latest
+      replicas: 4  # Agora permite rodar 4 réplicas sem restrição
+    ports:
+      - "5000:5000"
     networks:
-      - global
+      - app_network
     environment:
-      POSTGRES_DB: cbo_ocupacao
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123456
-    deploy:
-      replicas: 1  # Banco deve rodar em apenas 1 EC2
-      placement:
-        constraints:
-          - node.role == manager  # Banco fica no Manager Node
+      - FLASK_APP=app.py
+      - FLASK_ENV=production
+    volumes:
+      - ./app:/app
+    command: >
+      sh -c "pip install -r /app/requirements.txt && python /app/app.py"
 
-  redis:
+  app_postgres:
+    image: postgres:latest
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+
+  app_redis:
     image: redis:latest
-    networks:
-      - global
     deploy:
+      mode: replicated
       replicas: 1
-      placement:
-        constraints:
-          - node.role == manager  # Redis no Manager Node
+    volumes:
+      - redis_data:/data
+    networks:
+      - app_network
 
-  solr:
+  app_solr:
     image: solr:latest
-    networks:
-      - global
     deploy:
+      mode: replicated
       replicas: 1
-      placement:
-        constraints:
-          - node.role == manager  # Solr no Manager Node
+    environment:
+      - SOLR_HOME=/var/solr
+      - SOLR_OPTS="-Dsolr.allowUnsafeComponents=true"
+    volumes:
+      - solr_data:/var/solr
+    networks:
+      - app_network
+    ports:
+      - "8983:8983"
+    command:
+      - solr-precreate
+      - mycollection
 
-  traefik:
+  app_traefik:
     image: traefik:v2.9
+    deploy:
+      mode: global
     command:
       - "--api.insecure=true"
       - "--providers.docker"
       - "--entrypoints.web.address=:80"
     ports:
-      - "80:80"  # Load Balancer na porta 80
-      - "8080:8080"  # Dashboard do Traefik
+      - "80:80"
+      - "8080:8080"
     networks:
-      - global
-    deploy:
-      mode: global  # Roda em todas as instâncias EC2
+      - app_network
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
 
 networks:
-  global:
+  app_network:
     driver: overlay
+
+volumes:
+  postgres_data:
+  redis_data:
+  solr_data:
