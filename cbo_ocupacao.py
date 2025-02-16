@@ -2,17 +2,20 @@ import csv
 import psycopg2
 import pysolr
 
+# Configuração do PostgreSQL
 DB_CONFIG = {
     "dbname": "cbo_ocupacao",
     "user": "postgres",
     "password": "123456",
-    "host": "localhost",  
-    "port": "5433",  
+    "host": "app_postgres",  # Nome do serviço do Postgres no Docker Swarm
+    "port": "5432",  # A porta padrão do Postgres
 }
 
-SOLR_URL = "http://localhost:8983/solr/cbo_ocupacao"
+# URL do Solr
+SOLR_URL = "http://app_solr:8983/solr/cbo_ocupacao"  # Nome do serviço do Solr no Docker Swarm
 
 try:
+    # Conectar ao banco de dados PostgreSQL
     conn = psycopg2.connect(**DB_CONFIG)
     cursor = conn.cursor()
     print("Conexão com o banco de dados estabelecida.")
