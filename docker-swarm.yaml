@@ -37,30 +37,6 @@ services:
         constraints:
           - node.role == manager  # Banco fica no Manager Node
 
-  redis:
-    image: redis:latest
-    networks:
-      - global
-    ports:
-      - "6379:6379"  # Expondo a porta do Redis
-    deploy:
-      replicas: 1
-      placement:
-        constraints:
-          - node.role == manager  # Redis no Manager Node
-
-  solr:
-    image: solr:latest
-    networks:
-      - global
-    ports:
-      - "8983:8983"  # Expondo a porta do Solr
-    deploy:
-      replicas: 1
-      placement:
-        constraints:
-          - node.role == manager  # Solr no Manager Node
-
 networks:
   global:
     driver: overlay
