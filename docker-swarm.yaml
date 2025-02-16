@@ -1,29 +1,29 @@
 version: "3.9"
+
 services:
   flask-app:
-    image: python:3.9-slim 
+    image: python:3.9-slim
     container_name: flask-app-container
     networks:
       - global
     volumes:
-      - ./backend:/app 
+      - ./backend:/app
     working_dir: /app
     command: >
       sh -c "pip install -r requirements.txt && flask run --host=0.0.0.0 --port=5000"
     ports:
       - "5000:5000"
     deploy:
-      replicas: 2
+      replicas: 4  # Ajustado para 2 instâncias, dependendo da carga da sua aplicação
       resources:
         limits:
-          cpus: "1"
-          memory: 1G
+          cpus: "1"  # 1 CPU é adequado para Flask
+          memory: 1G  # 1 GB de memória
         reservations:
-          cpus: "0.1"
-          memory: 20M
+          cpus: "0.5"  # 0.5 CPU reservado
+          memory: 512M  # 512 MB de memória reservada
       restart_policy:
         condition: on-failure
-
 
   postgres:
     image: postgres:latest
@@ -37,14 +37,14 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123456
     deploy:
-      replicas: 1
+      replicas: 1  # Apenas uma réplica para o banco
       resources:
         limits:
-          cpus: "1"
-          memory: 1G
+          cpus: "1"  # 1 CPU deve ser suficiente para o PostgreSQL
+          memory: 2G  # 2 GB de memória para o banco
         reservations:
-          cpus: "0.1"
-          memory: 20M
+          cpus: "0.5"  # 0.5 CPU reservado para garantir disponibilidade
+          memory: 1G  # 1 GB de memória reservada para o banco
       restart_policy:
         condition: on-failure
 
@@ -56,14 +56,14 @@ services:
     ports:
       - "6379:6379"
     deploy:
-      replicas: 1
+      replicas: 1  # Uma réplica para o Redis
       resources:
         limits:
-          cpus: "1"
-          memory: 1G
+          cpus: "0.5"  # Redis não requer muita CPU
+          memory: 1G  # 1 GB de memória para o Redis
         reservations:
-          cpus: "0.1"
-          memory: 20M
+          cpus: "0.1"  # 0.1 CPU reservado
+          memory: 500M  # 500 MB de memória reservada para Redis
       restart_policy:
         condition: on-failure
 
@@ -75,14 +75,14 @@ services:
     ports:
       - "8983:8983"
     deploy:
-      replicas: 1
+      replicas: 1  # Uma réplica para Solr
       resources:
         limits:
-          cpus: "1"
-          memory: 1G
+          cpus: "1"  # 1 CPU deve ser suficiente para Solr
+          memory: 2G  # 2 GB de memória para Solr
         reservations:
-          cpus: "0.1"
-          memory: 20M
+          cpus: "0.5"  # 0.5 CPU reservado
+          memory: 1G  # 1 GB de memória reservada para Solr
       restart_policy:
         condition: on-failure
 
