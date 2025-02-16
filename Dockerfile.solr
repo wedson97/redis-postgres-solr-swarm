@@ -1,0 +1,5 @@
+FROM solr:latest
+
+ENV SOLR_CORE=cbo_ocupacao
+
+CMD ["sh", "-c", "solr-precreate $SOLR_CORE && exec solr -f"]

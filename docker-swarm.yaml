@@ -1,0 +1,91 @@
+version: "3.9"
+services:
+  flask-app:
+    image: python:3.9-slim 
+    container_name: flask-app-container
+    networks:
+      - global
+    volumes:
+      - ./backend:/app 
+    working_dir: /app
+    command: >
+      sh -c "pip install -r requirements.txt && flask run --host=0.0.0.0 --port=5000"
+    ports:
+      - "5000:5000"
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1G
+        reservations:
+          cpus: "0.1"
+          memory: 20M
+      restart_policy:
+        condition: on-failure
+
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres_container
+    networks:
+      - global
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: cbo_ocupacao
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1G
+        reservations:
+          cpus: "0.1"
+          memory: 20M
+      restart_policy:
+        condition: on-failure
+
+  redis:
+    image: redis:latest
+    container_name: redis-container
+    networks:
+      - global
+    ports:
+      - "6379:6379"
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1G
+        reservations:
+          cpus: "0.1"
+          memory: 20M
+      restart_policy:
+        condition: on-failure
+
+  solr:
+    image: solr:latest
+    container_name: solr-container
+    networks:
+      - global
+    ports:
+      - "8983:8983"
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1G
+        reservations:
+          cpus: "0.1"
+          memory: 20M
+      restart_policy:
+        condition: on-failure
+
+networks:
+  global:
+    driver: overlay
