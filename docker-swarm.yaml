@@ -19,9 +19,6 @@ services:
         limits:
           cpus: "1"  # 1 CPU é adequado para Flask
           memory: 1G  # 1 GB de memória
-        reservations:
-          cpus: "0.5"  # 0.5 CPU reservado
-          memory: 512M  # 512 MB de memória reservada
       restart_policy:
         condition: on-failure
 
@@ -42,9 +39,6 @@ services:
         limits:
           cpus: "1"  # 1 CPU deve ser suficiente para o PostgreSQL
           memory: 2G  # 2 GB de memória para o banco
-        reservations:
-          cpus: "0.5"  # 0.5 CPU reservado para garantir disponibilidade
-          memory: 1G  # 1 GB de memória reservada para o banco
       restart_policy:
         condition: on-failure
 
@@ -61,9 +55,6 @@ services:
         limits:
           cpus: "0.5"  # Redis não requer muita CPU
           memory: 1G  # 1 GB de memória para o Redis
-        reservations:
-          cpus: "0.1"  # 0.1 CPU reservado
-          memory: 500M  # 500 MB de memória reservada para Redis
       restart_policy:
         condition: on-failure
 
@@ -80,9 +71,6 @@ services:
         limits:
           cpus: "1"  # 1 CPU deve ser suficiente para Solr
           memory: 2G  # 2 GB de memória para Solr
-        reservations:
-          cpus: "0.5"  # 0.5 CPU reservado
-          memory: 1G  # 1 GB de memória reservada para Solr
       restart_policy:
         condition: on-failure
 
