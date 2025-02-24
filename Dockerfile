@@ -9,11 +9,14 @@ ENV TZ=America/Sao_Paulo
 
 # Install tzdata package and configure timezone
 RUN apt-get update && \
-    apt-get install -y tzdata && \
+    apt-get install -y git tzdata && \
     ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
     echo $TZ > /etc/timezone && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+# Clone the GitHub repository
+RUN git clone https://github.com/seu-usuario/seu-projeto.git .
 
 # Copy the requirements.txt file into the container
 COPY requirements.txt .
