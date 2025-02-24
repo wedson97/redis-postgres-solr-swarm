@@ -16,7 +16,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Clone the GitHub repository
-RUN git clone https://github.com/seu-usuario/seu-projeto.git .
+RUN git clone https://github.com/wedson97/redis-postgres-solr-swarm.git .
 
 # Copy the requirements.txt file into the container
 COPY requirements.txt .
